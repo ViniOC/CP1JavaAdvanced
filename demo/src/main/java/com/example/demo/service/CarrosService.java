@@ -1,6 +1,5 @@
 package com.example.demo.service;
 
-
 import com.example.demo.datasource.repositories.MockCarros;
 import com.example.demo.domainmodel.Carros;
 import com.example.demo.domainmodel.TipoCarro;
@@ -9,8 +8,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -22,20 +23,41 @@ public class CarrosService {
     public List<Carros> getAll(){
         return this.repository.getAll();
     }
+
     public Carros getById(Long id){
         return this.repository.findById(id);
     }
+
     public Carros save(Carros carros){
         return this.repository.save(carros);
     }
+
     public Carros update(Carros carros){
         return this.repository.save(carros);
     }
+
     public void deleteById(Long id){
-         this.repository.deleteById(id);
+        this.repository.deleteById(id);
     }
+
     public void delete(Carros carros){
         this.repository.delete(carros);
+    }
+
+    // Novo método - Top 10 por potência
+    public List<Carros> getTop10ByPotencia() {
+        return this.repository.getAll().stream()
+                .sorted(Comparator.comparingInt(Carros::getPotencia).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
+    }
+
+    // Novo método - Top 10 por economia
+    public List<Carros> getTop10ByEconomia() {
+        return this.repository.getAll().stream()
+                .sorted(Comparator.comparingDouble(Carros::getEconomia).reversed())
+                .limit(10)
+                .collect(Collectors.toList());
     }
 
     public Carros partialUpdate(Long id, Map<String, Object> updates){
@@ -50,9 +72,7 @@ public class CarrosService {
                 case "economia": carros.setEconomia(Double.parseDouble(entry.getValue().toString())); break;
                 case "tipo": carros.setTipo(Enum.valueOf(TipoCarro.class, entry.getValue().toString())); break;
                 case "preco": carros.setPreco(Double.parseDouble(entry.getValue().toString())); break;
-
             }
-
         }
         return this.repository.save(carros);
     }
