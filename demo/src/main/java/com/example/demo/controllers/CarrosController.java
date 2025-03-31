@@ -1,6 +1,7 @@
 package com.example.demo.controllers;
 
 import com.example.demo.domainmodel.Carros;
+import com.example.demo.domainmodel.TipoCarro;
 import com.example.demo.service.CarrosService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -27,11 +28,11 @@ public class CarrosController {
     @GetMapping("/{id}")
     public ResponseEntity<Carros> findById(@PathVariable Long id){
         System.out.println("http://localhost:8080/api/carros/" + id);
-        Carros emp = this.service.getById(id);
-        if(emp == null){
+        Carros carro = this.service.getById(id);
+        if(carro == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
-            return new ResponseEntity<>(emp, HttpStatus.OK);
+            return new ResponseEntity<>(carro, HttpStatus.OK);
         }
     }
 
@@ -53,6 +54,15 @@ public class CarrosController {
     public ResponseEntity<List<Carros>> top10PorEconomia() {
         return new ResponseEntity<>(
                 this.service.getTop10ByEconomia(),
+                HttpStatus.OK
+        );
+    }
+
+    // Novo endpoint - Carros elétricos
+    @GetMapping("/eletricos")
+    public ResponseEntity<List<Carros>> listarEletricos() {
+        return new ResponseEntity<>(
+                this.service.getByTipo(TipoCarro.ELETRICO),
                 HttpStatus.OK
         );
     }

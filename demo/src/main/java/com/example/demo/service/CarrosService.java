@@ -60,6 +60,12 @@ public class CarrosService {
                 .collect(Collectors.toList());
     }
 
+    public List<Carros> getByTipo(TipoCarro tipo) {
+        return this.repository.getAll().stream()
+                .filter(carro -> carro.getTipo() == tipo)
+                .collect(Collectors.toList());
+    }
+
     public Carros partialUpdate(Long id, Map<String, Object> updates){
         Carros carros = this.repository.findById(id);
         for(Map.Entry<String, Object> entry : updates.entrySet()){
