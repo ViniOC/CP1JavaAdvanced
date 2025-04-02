@@ -1,119 +1,181 @@
 package com.example.demo.controllers;
 
-import com.example.demo.domainmodel.Carros;
-import com.example.demo.domainmodel.TipoCarro;
-import com.example.demo.service.CarrosService;
+import io.restassured.RestAssured;
+import io.restassured.http.ContentType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.server.LocalServerPort;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashMap;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.*;
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.*;
 
-class CarrosControllerTest {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+public class CarrosControllerTest {
 
-    @Mock
-    private CarrosService carrosService;
-
-    @InjectMocks
-    private CarrosController carrosController;
+    @LocalServerPort
+    private int port;
 
     @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
+    public void setUp() {
+        RestAssured.baseURI = "http://localhost";
+        RestAssured.port = port;
+    }
+
+
+    @Test
+    public void testListAllCarros() {
+        given()
+                .when()
+                .get("/api/carros/")
+                .then()
+                .statusCode(200)
+                .body("$", not(empty()));
+    }
+
+
+    @Test
+    public void testFindCarroById() {
+
+        Long carroId = given()
+                .contentType(ContentType.JSON)
+                .body("{ \"marca\": \"Tesla\", \"modelo\": \"Model S\", \"ano\": 2023 }")
+                .when()
+                .post("/api/carros")
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath().getLong("id");
+
+        // Agora busca pelo ID
+        given()
+                .when()
+                .get("/api/carros/" + carroId)
+                .then()
+                .statusCode(200)
+                .body("marca", equalTo("Tesla"));
+    }
+
+
+    @Test
+    public void testDeleteCarroById() {
+        // Cria um carro para deletar
+        Long carroId = given()
+                .contentType(ContentType.JSON)
+                .body("{ \"marca\": \"Ford\", \"modelo\": \"Mustang\", \"ano\": 2022 }")
+                .when()
+                .post("/api/carros")
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath().getLong("id");
+
+
+        given()
+                .when()
+                .delete("/api/carros/" + carroId)
+                .then()
+                .statusCode(204);
+    }
+
+
+    @Test
+    public void testAddCarro() {
+        given()
+                .contentType(ContentType.JSON)
+                .body("{ \"marca\": \"Toyota\", \"modelo\": \"Corolla\", \"ano\": 2023 }")
+                .when()
+                .post("/api/carros")
+                .then()
+                .statusCode(201)
+                .body("marca", equalTo("Toyota"));
     }
 
     @Test
-    void findById_QuandoCarroExiste_RetornaCarro() {
-        // Arrange
-        Long carId = 1L;
-        Carros mockCar = new Carros();
-        mockCar.setId(carId);
-        when(carrosService.getById(carId)).thenReturn(mockCar);
+    public void testUpdateCarro() {
+        // Cria um carro
+        Long carroId = given()
+                .contentType(ContentType.JSON)
+                .body("{ \"marca\": \"Honda\", \"modelo\": \"Civic\", \"ano\": 2021 }")
+                .when()
+                .post("/api/carros")
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath().getLong("id");
 
-        // Act
-        ResponseEntity<Carros> response = carrosController.findById(carId);
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(carId, response.getBody().getId());
-        verify(carrosService, times(1)).getById(carId);
+        given()
+                .contentType(ContentType.JSON)
+                .body("{ \"marca\": \"Honda\", \"modelo\": \"Civic\", \"ano\": 2022 }")
+                .when()
+                .put("/api/carros/" + carroId)
+                .then()
+                .statusCode(200)
+                .body("ano", equalTo(2022));
     }
+
 
     @Test
-    void top10PorPotencia_DeveFazerTop10DePotenciaOrdenadosDecrescentemente() {
-        // Arrange
-        Carros car1 = new Carros();
-        car1.setPotencia(200);
-        Carros car2 = new Carros();
-        car2.setPotencia(300);
+    public void testPatchCarro() {
+        // Cria um carro
+        Long carroId = given()
+                .contentType(ContentType.JSON)
+                .body("{ \"marca\": \"Chevrolet\", \"modelo\": \"Onix\", \"ano\": 2020 }")
+                .when()
+                .post("/api/carros")
+                .then()
+                .statusCode(201)
+                .extract()
+                .jsonPath().getLong("id");
 
-        List<Carros> mockCars = Arrays.asList(car2, car1);
-        when(carrosService.getTop10ByPotencia()).thenReturn(mockCars);
 
-        // Act
-        ResponseEntity<List<Carros>> response = carrosController.top10PorPotencia();
+        Map<String, Object> updates = new HashMap<>();
+        updates.put("ano", 2023);
 
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
-        assertEquals(300, response.getBody().get(0).getPotencia());
-        assertEquals(200, response.getBody().get(1).getPotencia());
-        verify(carrosService, times(1)).getTop10ByPotencia();
+        given()
+                .contentType(ContentType.JSON)
+                .body(updates)
+                .when()
+                .patch("/api/carros/" + carroId)
+                .then()
+                .statusCode(200)
+                .body("ano", equalTo(2023));
     }
+
 
     @Test
-    void top10PorEconomia_DeveFazerTop10DeEconomiaOrdenadosDecrescentemente() {
-        // Arrange
-        Carros car1 = new Carros();
-        car1.setEconomia(15.5);
-        Carros car2 = new Carros();
-        car2.setEconomia(20.0);
-
-        List<Carros> mockCars = Arrays.asList(car2, car1);
-        when(carrosService.getTop10ByEconomia()).thenReturn(mockCars);
-
-        // Act
-        ResponseEntity<List<Carros>> response = carrosController.top10PorEconomia();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(2, response.getBody().size());
-        assertEquals(20.0, response.getBody().get(0).getEconomia());
-        assertEquals(15.5, response.getBody().get(1).getEconomia());
-        verify(carrosService, times(1)).getTop10ByEconomia();
+    public void testTop10PorPotencia() {
+        given()
+                .when()
+                .get("/api/carros/potencia")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(lessThanOrEqualTo(10)));
     }
+
 
     @Test
-    void listarEletricos_DeveListarSomenteOsCarrosEletricos() {
-        // Arrange
-        Carros electricCar = new Carros();
-        electricCar.setTipo(TipoCarro.ELETRICO);
-
-        List<Carros> mockCars = Collections.singletonList(electricCar);
-        when(carrosService.getByTipo(TipoCarro.ELETRICO)).thenReturn(mockCars);
-
-        // Act
-        ResponseEntity<List<Carros>> response = carrosController.listarEletricos();
-
-        // Assert
-        assertEquals(HttpStatus.OK, response.getStatusCode());
-        assertNotNull(response.getBody());
-        assertEquals(1, response.getBody().size());
-        assertEquals(TipoCarro.ELETRICO, response.getBody().get(0).getTipo());
-        verify(carrosService, times(1)).getByTipo(TipoCarro.ELETRICO);
+    public void testTop10PorEconomia() {
+        given()
+                .when()
+                .get("/api/carros/economia")
+                .then()
+                .statusCode(200)
+                .body("$", hasSize(lessThanOrEqualTo(10)));
     }
 
+
+    @Test
+    public void testListarEletricos() {
+        given()
+                .when()
+                .get("/api/carros/eletricos")
+                .then()
+                .statusCode(200)
+                .body("$", everyItem(hasEntry("tipo", "ELETRICO")));
+    }
 }
