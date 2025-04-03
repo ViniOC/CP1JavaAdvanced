@@ -5,7 +5,7 @@ import java.util.Objects;
 
 
 
-@NoArgsConstructor
+
 public class Carros {
 
 
@@ -23,6 +23,9 @@ public class Carros {
     private @Getter @Setter TipoCarro tipo;        // Tipo (combustão, híbrido ou elétrico)
 
     private @Getter @Setter Double preco;          // Valor de mercado
+
+    public Carros() {
+    }
 
     // Construtor sem ID (para criação de novos registros)
     public Carros(String marca, String modelo, Integer ano, Integer potencia,
@@ -74,4 +77,70 @@ public class Carros {
                 ", preco=R$" + preco +
                 '}';
     }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getMarca() {
+        return marca;
+    }
+
+    public void setMarca(String marca) {
+        this.marca = marca;
+    }
+
+    public String getModelo() {
+        return modelo;
+    }
+
+    public void setModelo(String modelo) {
+        this.modelo = modelo;
+    }
+
+    public Integer getAno() {
+        return ano;
+    }
+
+    public void setAno(Integer ano) {
+        this.ano = ano;
+    }
+
+    public Integer getPotencia() {
+        return potencia;
+    }
+
+    public void setPotencia(Integer potencia) {
+        this.potencia = potencia;
+    }
+
+    public Double getEconomia() {
+        return economia;
+    }
+
+    public void setEconomia(Double economia) {
+        this.economia = economia;
+    }
+
+    public TipoCarro getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(TipoCarro tipo) {
+        this.tipo = tipo;
+    }
+
+    public Double getPreco() {
+        return preco;
+    }
+
+    public void setPreco(Double preco) {
+        this.preco = preco;
+    }
+
+
 }

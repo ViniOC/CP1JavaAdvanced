@@ -4,6 +4,7 @@ import com.example.demo.domainmodel.Carros;
 import com.example.demo.domainmodel.TipoCarro;
 import com.example.demo.service.CarrosService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +14,10 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/carros")
-@RequiredArgsConstructor
 public class CarrosController {
 
-    private final CarrosService service;
+    @Autowired
+    private CarrosService service;
 
     @GetMapping("/")
     public ResponseEntity<List<Carros>> listAll(){
