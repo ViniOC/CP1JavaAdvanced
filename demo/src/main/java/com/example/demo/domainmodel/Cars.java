@@ -6,30 +6,30 @@ import java.util.Objects;
 
 
 
-public class Carros {
+public class Cars {
 
 
 
 
     private @Getter @Setter Long id;
 
-    private @Getter @Setter String marca;          // Fabricante do veículo
-    private @Getter @Setter String modelo;         // Nome do modelo
-    private @Getter @Setter Integer ano;           // Ano de fabricação
-    private @Getter @Setter Integer potencia;      // Potência em cavalos (HP)
-    private @Getter @Setter Double economia;       // Economia (km/litro ou km/kWh)
+    private @Getter @Setter String marca;
+    private @Getter @Setter String modelo;
+    private @Getter @Setter Integer ano;
+    private @Getter @Setter Integer potencia;
+    private @Getter @Setter Double economia;
 
 
-    private @Getter @Setter TipoCarro tipo;        // Tipo (combustão, híbrido ou elétrico)
+    private @Getter @Setter TypeCars tipo;
 
-    private @Getter @Setter Double preco;          // Valor de mercado
+    private @Getter @Setter Double preco;
 
-    public Carros() {
+    public Cars() {
     }
 
     // Construtor sem ID (para criação de novos registros)
-    public Carros(String marca, String modelo, Integer ano, Integer potencia,
-                 Double economia, TipoCarro tipo, Double preco) {
+    public Cars(String marca, String modelo, Integer ano, Integer potencia,
+                Double economia, TypeCars tipo, Double preco) {
         this.marca = marca;
         this.modelo = modelo;
         this.ano = ano;
@@ -40,8 +40,8 @@ public class Carros {
     }
 
     // Construtor com ID (para atualizações)
-    public Carros(Long id, String marca, String modelo, Integer ano, Integer potencia,
-                 Double economia, TipoCarro tipo, Double preco) {
+    public Cars(Long id, String marca, String modelo, Integer ano, Integer potencia,
+                Double economia, TypeCars tipo, Double preco) {
         this.id = id;
         this.marca = marca;
         this.modelo = modelo;
@@ -55,7 +55,7 @@ public class Carros {
     @Override
     public boolean equals(Object o) {
         if (o == null || getClass() != o.getClass()) return false;
-        Carros carro = (Carros) o;
+        Cars carro = (Cars) o;
         return Objects.equals(id, carro.id);
     }
 
@@ -66,15 +66,14 @@ public class Carros {
 
     @Override
     public String toString() {
-        return "Carro{" +
-                "id=" + id +
-                ", marca='" + marca + '\'' +
-                ", modelo='" + modelo + '\'' +
+        return "{id=" + id +
+                ", marca=" + marca +
+                ", modelo=" + modelo +
                 ", ano=" + ano +
-                ", potencia=" + potencia + "HP" +
-                ", economia=" + economia + (tipo == TipoCarro.ELETRICO ? "km/kWh" : "km/l") +
+                ", potencia=" + potencia +
+                ", economia=" + economia +
                 ", tipo=" + tipo +
-                ", preco=R$" + preco +
+                ", preco=" + preco +
                 '}';
     }
 
@@ -126,11 +125,11 @@ public class Carros {
         this.economia = economia;
     }
 
-    public TipoCarro getTipo() {
+    public TypeCars getTipo() {
         return tipo;
     }
 
-    public void setTipo(TipoCarro tipo) {
+    public void setTipo(TypeCars tipo) {
         this.tipo = tipo;
     }
 

@@ -1,9 +1,8 @@
 package com.example.demo.controllers;
 
-import com.example.demo.domainmodel.Carros;
-import com.example.demo.domainmodel.TipoCarro;
-import com.example.demo.service.CarrosService;
-import lombok.RequiredArgsConstructor;
+import com.example.demo.domainmodel.Cars;
+import com.example.demo.domainmodel.TypeCars;
+import com.example.demo.service.CarsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,13 +13,13 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/api/carros")
-public class CarrosController {
+public class CarsController {
 
     @Autowired
-    private CarrosService service;
+    private CarsService service;
 
     @GetMapping("/")
-    public ResponseEntity<List<Carros>> listAll(){
+    public ResponseEntity<List<Cars>> listAll(){
         return new ResponseEntity<>(
                 this.service.getAll(),
                 HttpStatus.OK
@@ -28,9 +27,9 @@ public class CarrosController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Carros> findById(@PathVariable Long id){
+    public ResponseEntity<Cars> findById(@PathVariable Long id){
         System.out.println("http://localhost:8080/api/carros/" + id);
-        Carros carro = this.service.getById(id);
+        Cars carro = this.service.getById(id);
         if(carro == null){
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         } else {
@@ -39,32 +38,32 @@ public class CarrosController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Carros> removeCarById(@PathVariable Long id){
+    public ResponseEntity<Cars> removeCarById(@PathVariable Long id){
         this.service.deleteById(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping
-    public ResponseEntity<Carros> addCarro(@RequestBody Carros carro){
-        Carros carroCreated = this.service.save(carro);
+    public ResponseEntity<Cars> addCarro(@RequestBody Cars carro){
+        Cars carroCreated = this.service.save(carro);
         return new ResponseEntity<>(carroCreated, HttpStatus.CREATED);
     }
     @PutMapping("/{id}")
-    public ResponseEntity<Carros> updateCarro(@PathVariable Long id, @RequestBody Carros carro){
-        Carros databaseCarros = this.service.getById(id);
-        databaseCarros.setMarca( carro.getMarca());
-        databaseCarros.setModelo(carro.getModelo());
-        databaseCarros.setAno(carro.getAno());
-        databaseCarros.setPotencia(carro.getPotencia());
-        databaseCarros.setEconomia(carro.getEconomia());
-        databaseCarros.setTipo(carro.getTipo());
-        databaseCarros.setPreco(carro.getPreco());
-        this.service.update(databaseCarros);
-        return new ResponseEntity<>(databaseCarros, HttpStatus.OK);
+    public ResponseEntity<Cars> updateCarro(@PathVariable Long id, @RequestBody Cars carro){
+        Cars databaseCars = this.service.getById(id);
+        databaseCars.setMarca( carro.getMarca());
+        databaseCars.setModelo(carro.getModelo());
+        databaseCars.setAno(carro.getAno());
+        databaseCars.setPotencia(carro.getPotencia());
+        databaseCars.setEconomia(carro.getEconomia());
+        databaseCars.setTipo(carro.getTipo());
+        databaseCars.setPreco(carro.getPreco());
+        this.service.update(databaseCars);
+        return new ResponseEntity<>(databaseCars, HttpStatus.OK);
     }
     @PatchMapping("/{id}")
-    public ResponseEntity<Carros> patchCarro(@PathVariable Long id, @RequestBody Map<String, Object>updates){
-        Carros updateCarro = this.service.partialUpdate(id, updates);
+    public ResponseEntity<Cars> patchCarro(@PathVariable Long id, @RequestBody Map<String, Object>updates){
+        Cars updateCarro = this.service.partialUpdate(id, updates);
         if(updateCarro != null){
             return new ResponseEntity<>(updateCarro, HttpStatus.OK);
         }else{
@@ -73,7 +72,7 @@ public class CarrosController {
     }
 
     @GetMapping("/potencia")
-    public ResponseEntity<List<Carros>> top10PorPotencia() {
+    public ResponseEntity<List<Cars>> top10PorPotencia() {
         return new ResponseEntity<>(
                 this.service.getTop10ByPotencia(),
                 HttpStatus.OK
@@ -81,7 +80,7 @@ public class CarrosController {
     }
 
     @GetMapping("/economia")
-    public ResponseEntity<List<Carros>> top10PorEconomia() {
+    public ResponseEntity<List<Cars>> top10PorEconomia() {
         return new ResponseEntity<>(
                 this.service.getTop10ByEconomia(),
                 HttpStatus.OK
@@ -90,9 +89,9 @@ public class CarrosController {
 
     // Novo endpoint - Carros elétricos
     @GetMapping("/eletricos")
-    public ResponseEntity<List<Carros>> listarEletricos() {
+    public ResponseEntity<List<Cars>> listarEletricos() {
         return new ResponseEntity<>(
-                this.service.getByTipo(TipoCarro.ELETRICO),
+                this.service.getByTipo(TypeCars.ELETRICO),
                 HttpStatus.OK
         );
     }

@@ -1,6 +1,6 @@
 package com.example.demo.domainmodel;
 
-public enum TipoCarro {
+public enum TypeCars {
     COMBUSTAO,
     HIBRIDO,
     ELETRICO
