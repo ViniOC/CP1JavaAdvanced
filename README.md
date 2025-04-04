@@ -138,12 +138,12 @@ src/
 │   ├── java/
 │   │   ├── controllers/       # Endpoints da API
 │   │   ├── domainmodel/       # Entidades (Carros, TipoCarro)
-│   │   ├── repositories/      # JPA Repositories
+│   │   
 │   │   ├── service/           # Lógica de negócio
 │   │   └── DemoApplication.java
 │   └── resources/
 │       ├── application.yml    # Configurações do Spring
-│       └── data.sql           # Dados iniciais (opcional)
+│       
 └── test/
     └── java/
         └── controllers/       # Testes de API com RestAssured
